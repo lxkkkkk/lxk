@@ -1,0 +1,126 @@
+#include <iostream>
+using namespace std;
+
+FILE *fp;//word文件指针
+int length; //一组背10个单词，一行英文加一行释义是一个整体
+
+
+//背单词
+void recite() {
+
+	char buffer[1000];//单词存储缓冲区
+
+	int step = 0;
+	while (fgets(buffer, 1000, fp) != NULL) {
+		if (step < length) {
+			printf("%s", buffer);
+			step++;
+		}
+	}
+}
+
+
+
+//查单词
+void queryWord(string a) {
+
+	//最后一个单词查不出来释义，单独写出来吧（手动狗头）
+	if (a == "remain") {
+		cout << "v保持" << endl;
+		return;
+	}
+
+	a += '\n';//靠的卡了我好长时间
+
+	char buffer[1000];//单词存储缓冲区
+
+	int ok = 0;//查询命中ok=1
+
+	while (fgets(buffer, 1000, fp) != NULL) {
+
+		if (ok) {
+			printf("%s", buffer);
+			ok = 0;
+			return;
+		}
+
+
+		if (buffer == a) {
+			ok = 1;
+		}
+	}
+	cout << "词库里没有，快加进去" << endl;
+}
+
+
+int main() {
+
+	cout << "缺陷说明：1,一次只能查一个单词;" << endl;
+	cout << "          2,只能执行4个操作的一种（while白写了）" << endl;
+
+	cout << endl;
+
+
+	fp = fopen("words.txt", "r");
+
+
+	//验证读文件是否成功
+	if (fp != NULL) {
+		cout << "打开文件成功，可以使用本系统了" << endl;
+		cout << endl;
+	} else {
+		cout << "打开文件失败" << endl;
+	}
+
+
+
+	//菜单提示
+	cout << "背单词按1，查单词按2，查看单词库按3，退出按4" << endl;
+
+	int option = 0;
+	while (cin >> option) {
+		getchar();
+
+		if (option == 1) {
+			//背单词
+			cout << "你可以选择一次背几个单词:" << endl;
+			cin >> length;
+			getchar();
+			length *= 2;
+			recite();
+		}
+
+		//查单词
+		if (option == 2) {
+			cout << "请输入你想查的单词:" << endl;
+			string str;
+			cin >> str;
+			getchar();
+			queryWord(str);
+		}
+
+		//查看词库
+		if (option == 3) {
+			//读文件
+			if (fp != NULL) {
+				//feof(file stream )文件指针到达文件末尾
+				while (!feof(fp)) //读文件
+					printf("%c", fgetc(fp));
+			} else
+				printf("没打开文件，寄\n");
+		}
+
+
+		if (option == 4) {
+			break;
+		}
+
+	}
+
+
+	fclose(fp);
+
+	return 0;
+}
+
+
